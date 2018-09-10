@@ -20,7 +20,7 @@ function reverseArrayInPlace(arr) {
   return arr;
 }
 
-// console.log(reverseArray([0, 1, 1, 2, 3, 4, 5]));
+console.log(reverseArray([0, 1, 1, 2, 3, 4, 5]));
 
 var inPlaceArray = [0, 1, 2, 3, 4, 5];
 reverseArrayInPlace(inPlaceArray);
