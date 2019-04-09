@@ -11,5 +11,5 @@ test("convert Greek text to uppercase", ()=>{
 });
 
 test("don't convert case-less characters", ()=>{
-    return "ࢎ࠶߈ఆ௷".toUpperCase() == "ࢎ࠶߈ఆ௷";
+    return "مرحبا".toUpperCase() == "مرحبا";
 })
