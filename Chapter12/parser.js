@@ -167,6 +167,22 @@ specialForms.fun = (args, scope) => {
     };
 };
 
+specialForms.set = (args, env) => {
+    if (args.length != 2 || args[0].type != "word") {
+        throw new SyntaxError("Bad use of set");
+    }
+    let varName = args[0].name;
+    let value = evaluate(args[1], env);
+
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+        if (Object.prototype.hasOwnProperty.call(scope, varName)) {
+            scope[varName] = value;
+            return value;
+        }
+    }
+    throw new ReferenceError(`Setting undefined variable ${varName}`);
+};
+
 console.log(parse("+(a, 10)"));
 
 const topScope = Object.create(null);
@@ -186,6 +202,10 @@ topScope.print = value => {
     console.log(value);
     return value;
 };
+
+topScope.array = (...values) => values;
+topScope.length = array => array.length;
+topScope.element = (array, i) => array[i];
 
 function run(program) {
     return evaluate(parse(program), Object.create(topScope));
@@ -212,3 +232,23 @@ do(define(pow, fun(base, exp,
             *(base, pow(base, -(exp, 1)))))),
     print(pow(2, 10)))
 `);
+
+run(`
+do(define(sum, fun(array,
+        do(define(i, 0),
+            define(sum, 0),
+            while(<(i, length(array)),
+                do(define(sum, +(sum, element(array, i))),
+                    define(i, +(i, 1)))),
+                sum))),
+            print(sum(array(1, 2, 3))))
+`);
+
+run(`
+do(define(x, 4),
+   define(setx, fun(val, set(x, val))),
+   setx(50),
+   print(x))
+`);
+
+run(`set(quux, true)`);
