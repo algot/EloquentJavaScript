@@ -1,0 +1,32 @@
+<button id="clickMe">Click me</button>
+<p>No handler there</p>
+<button id="actOnce">Act-once button</button>
+<p></p>
+<button id="clickMeAnyWay">Click me any way you want</button>
+<p></p>
+
+<script>
+    let button = document.querySelector("#clickMe");
+    button.addEventListener("click", () => {
+        console.log("Button clicked.");
+    });
+
+    let actOnce = document.querySelector("#actOnce");
+
+    function once() {
+        console.log("Done.");
+        actOnce.removeEventListener("click", once);
+    }
+    actOnce.addEventListener("click", once);
+
+    let clickMeAnyWay = document.querySelector("#clickMeAnyWay");
+    clickMeAnyWay.addEventListener("mousedown", event => {
+        if (event.button == 0) {
+            console.log("Left Button");
+        } else if (event.button == 1) {
+            console.log("Middle button");
+        } else if (event.button == 2) {
+            console.log("Right button");
+        }
+    });
+</script>
