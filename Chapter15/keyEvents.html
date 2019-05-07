@@ -1,0 +1,18 @@
+<p>This page turns violet when you hold the V key.</p>
+
+<p>Press Control-Space to continue.</p>
+
+<script>
+    window.addEventListener("keydown", event => {
+        if (event.key == "v") {
+            document.body.style.background = "violet";
+        } else if (event.key == " " && event.ctrlKey) {
+            console.log("Continuing!");
+        }
+    });
+    window.addEventListener("keyup", event => {
+        if (event.key == "v") {
+            document.body.style.background = "";
+        }
+    });
+</script>
