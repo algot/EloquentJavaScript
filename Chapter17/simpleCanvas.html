@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<body>
+    <p>Before canvas.</p>
+    <canvas width="120" height="60"></canvas>
+    <p>After canvas.</p>
+</body>
+
+<script>
+    let canvas = document.querySelector("canvas");
+    let context = canvas.getContext("2d");
+    context.fillStyle = "red";
+    context.fillRect(10, 10, 100, 50);
+
+    context.strokeStyle = "blue";
+    context.strokeRect(5, 5, 50, 50);
+    context.lineWidth = 5;
+    context.strokeRect(135, 5, 50, 50);
+
+    context.beginPath();
+    for (let y = 10; y < 100; y += 10) {
+        context.moveTo(10, y);
+        context.lineTo(90, y);
+    }
+    context.stroke();
+</script>
