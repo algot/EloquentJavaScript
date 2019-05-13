@@ -26,7 +26,7 @@ var Level = class Level {
       });
     });
   }
-}
+};
 
 var State = class State {
   constructor(level, actors, status) {
@@ -42,7 +42,7 @@ var State = class State {
   get player() {
     return this.actors.find(a => a.type == "player");
   }
-}
+};
 
 var Vec = class Vec {
   constructor(x, y) {
@@ -55,7 +55,7 @@ var Vec = class Vec {
   times(factor) {
     return new Vec(this.x * factor, this.y * factor);
   }
-}
+};
 
 var Player = class Player {
   constructor(pos, speed) {
@@ -71,7 +71,7 @@ var Player = class Player {
     return new Player(pos.plus(new Vec(0, -0.5)),
       new Vec(0, 0));
   }
-}
+};
 
 Player.prototype.size = new Vec(0.8, 1.5);
 
@@ -95,7 +95,7 @@ var Lava = class Lava {
       return new Lava(pos, new Vec(0, 3), pos);
     }
   }
-}
+};
 
 Lava.prototype.size = new Vec(1, 1);
 
@@ -115,7 +115,7 @@ var Coin = class Coin {
     return new Coin(basePos, basePos,
       Math.random() * Math.PI * 2);
   }
-}
+};
 
 Coin.prototype.size = new Vec(0.6, 0.6);
 
@@ -127,7 +127,7 @@ var levelChars = {
   "o": Coin,
   "=": Lava,
   "|": Lava,
-  "v": Lava
+  "v": Lava,
 };
 
 var simpleLevel = new Level(simpleLevelPlan);
@@ -155,7 +155,7 @@ var DOMDisplay = class DOMDisplay {
   clear() {
     this.dom.remove();
   }
-}
+};
 
 var scale = 20;
 
@@ -322,6 +322,34 @@ Player.prototype.update = function (time, state, keys) {
   }
   return new Player(pos, new Vec(xSpeed, ySpeed));
 };
+
+const monsterSpeed = 4;
+
+class Monster {
+  constructor(pos) {
+    this.pos = pos;
+  }
+
+  get type() {
+    return "monster";
+  }
+
+  static create(pos) {
+    return new Monster(pos.plus(new Vec(0, -1)));
+  }
+
+  update(time, state) {
+    let player = state.player;
+    let speed = (player.pos.x < this.pos.x ? -1 : 1) * time * monsterSpeed;
+    let newPos = new Vec(this.pos.x + speed, this.pos.y);
+    if(state.level.touches(newPos, this.size, "wall")) return this;
+    else return new Monster(newPos);
+  }
+}
+
+Monster.prototype.size = new Vec(1.2, 2);
+
+levelChars["M"] = Monster;
 
 function trackKeys(keys) {
   let down = Object.create(null);
