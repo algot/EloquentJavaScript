@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<body>
+    <label>
+        <input type="radio" name="color" value="orange"> Orange
+    </label>
+    <label>
+        <input type="radio" name="color" value="lightgreen"> Green
+    </label>
+    <label>
+        <input type="radio" name="color" value="lightblue"> Blue
+    </label>
+
+    <script>
+        let buttons = document.querySelectorAll("[name=color");
+        for (let button of Array.from(buttons)) {
+            button.addEventListener("change", () => {
+                document.body.style.background = button.value;
+            });
+        }
+    </script>
+</body>
