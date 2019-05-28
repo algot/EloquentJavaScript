@@ -55,15 +55,30 @@ var PictureCanvas = class PictureCanvas {
     }
 };
 
-function drawPicture(picture, canvas, scale) {
-    canvas.width = picture.width * scale;
-    canvas.height = picture.height * scale;
+PictureCanvas.prototype.syncState = function (picture) {
+    if (this.picture == picture) return;
+    drawPicture(picture, this.dom, scale, this.picture);
+    this.picture = picture;
+};
+
+function drawPicture(picture, canvas, scale, previous) {
+    if (previous == null ||
+        previous.width != picture.width ||
+        previous.height != picture.height) {
+        canvas.width = picture.width * scale;
+        canvas.height = picture.height * scale;
+        previous = null;
+    }
+
     let cx = canvas.getContext("2d");
 
     for (let y = 0; y < picture.height; y++) {
         for (let x = 0; x < picture.width; x++) {
-            cx.fillStyle = picture.pixel(x, y);
-            cx.fillRect(x * scale, y * scale, scale, scale);
+            let color = picture.pixel(x, y);
+            if (previous == null || previous.pixel(x, y) != color) {
+                cx.fillStyle = color;
+                cx.fillRect(x * scale, y * scale, scale, scale);
+            }
         }
     }
 }
@@ -127,13 +142,34 @@ var PixelEditor = class PixelEditor {
         this.canvas = new PictureCanvas(state.picture, pos => {
             let tool = tools[this.state.tool];
             let onMove = tool(pos, this.state, dispatch);
-            if (onMove) return pos => onMove(pos, this.state);
+            if (onMove) return pos => onMove(pos, this.state, dispatch);
         });
         this.controls = controls.map(
             Control => new Control(state, config));
-        this.dom = elt("div", {}, this.canvas.dom, elt("br"),
+        this.dom = elt("div", {
+                tabIndex: 0,
+                onkeydown: event => this.keyDown(event, config)
+            }, this.canvas.dom, elt("br"),
             ...this.controls.reduce(
                 (a, c) => a.concat(" ", c.dom), []));
+    }
+    keyDown(event, config) {
+        if (event.key == "z" && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            config.dispatch({
+                undo: true
+            });
+        } else if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+            for (let tool of Object.keys(config.tools)) {
+                if (tool[0] == event.key) {
+                    event.preventDefault();
+                    config.dispatch({
+                        tool
+                    });
+                    return;
+                }
+            }
+        }
     }
     syncState(state) {
         this.state = state;
