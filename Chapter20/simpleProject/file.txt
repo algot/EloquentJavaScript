@@ -1,0 +1,2 @@
+The second argument to readFile indicates the character encoding used to
+decode the file into a string
